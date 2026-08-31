@@ -1,3 +1,10 @@
+
+/* true dynamic-viewport centering on phones */
+@media (max-width:700px){
+  main .panel{min-height:100dvh; padding:4dvh 18px}
+  #p1{justify-content:center; padding-top:4dvh}
+  #p1 .cue{bottom:2dvh}
+}
 /* ─ slide transitions ─ */
 html{scroll-snap-type:y mandatory}
 main .panel{scroll-snap-align:start; scroll-snap-stop:always}
