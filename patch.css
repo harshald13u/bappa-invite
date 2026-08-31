@@ -1,0 +1,15 @@
+/* slide transitions + compact closing pages */
+html{scroll-snap-type:y mandatory}
+main .panel{scroll-snap-align:start; scroll-snap-stop:always}
+@media (prefers-reduced-motion: reduce){html{scroll-snap-type:none}}
+
+#creditsPanel{justify-content:center}
+.credgrid{display:grid; grid-template-columns:1fr 1fr; gap:30px 22px; width:100%; max-width:560px; margin:0 auto}
+.credgrid .credit{margin:0}
+.credgrid .cmd{grid-column:1 / -1; margin-top:18px}
+@media (max-width:600px){
+  .credgrid{gap:22px 12px}
+  .crole{margin-bottom:6px}
+  .credgrid .cname{font-size:22px}
+  .credgrid .cmd .cname{font-size:27px}
+}
