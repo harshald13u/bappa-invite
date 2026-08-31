@@ -83,7 +83,7 @@
   } else {
     for (var q = 0; q < panels.length; q++) panels[q].classList.add('in');
   }
-  if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+  if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches && window.innerWidth > 700){
     var fade = function(){
       var vh = window.innerHeight;
       for (var f = 0; f < panels.length; f++){
