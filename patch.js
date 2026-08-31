@@ -5,6 +5,9 @@
   var vt = document.querySelectorAll('.visarjan .bigtime');
   for (var v = 0; v < vt.length; v++)
     vt[v].innerHTML = vt[v].innerHTML.replace('6:30 PM', '7:00 PM');
+  var cap = document.querySelectorAll('.caption');
+  for (var b = 0; b < cap.length; b++)
+    cap[b].innerHTML = cap[b].innerHTML.replace(' Behave accordingly.', '');
   var kk = document.querySelectorAll('.kicker');
   for (var d = 0; d < kk.length; d++){
     if (kk[d].textContent.replace(/\s+/g, ' ').trim() === 'Darshan'){
