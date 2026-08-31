@@ -1,3 +1,7 @@
+/* extended entrance stagger for credits */
+.in .rise:nth-child(6){transition-delay:.6s}
+.in .rise:nth-child(7){transition-delay:.72s}
+.credgrid .credit{transition-duration:.9s}
 
 /* true dynamic-viewport centering on phones */
 @media (max-width:700px){
