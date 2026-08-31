@@ -1,6 +1,6 @@
 (function(){
   'use strict';
-  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  // celestial bodies stay visible for reduced-motion users; scroll still positions them
 
   function sunImg(S){
     var c = document.createElement('canvas'); c.width = c.height = S;
