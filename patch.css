@@ -1,3 +1,13 @@
+/* unmissable scroll cue */
+.cue{font-size:13px !important; color:#F8D48A !important; letter-spacing:.38em;
+  background:rgba(8,17,28,.55); padding:13px 24px 15px; border-radius:100px;
+  border:1px solid rgba(232,163,61,.45);
+  -webkit-backdrop-filter:blur(8px); backdrop-filter:blur(8px);
+  box-shadow:0 0 26px rgba(232,163,61,.3);
+  cursor:pointer;
+  animation:cueFloat 2.1s ease-in-out infinite !important}
+.cue .chev{width:17px; height:17px; border-right-width:3px; border-bottom-width:3px}
+@keyframes cueFloat{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(8px)}}
 /* silky phone entrances */
 @media (max-width:700px){
   .panel:not(.in) .rise:not(.surface){filter:blur(5px)}
