@@ -1,7 +1,7 @@
 /* silky phone entrances */
 @media (max-width:700px){
-  .rise:not(.surface){filter:blur(5px)}
-  h1 .ch, h2 .ch{filter:blur(3px)}
+  .panel:not(.in) .rise:not(.surface){filter:blur(5px)}
+  .panel:not(.in) h1 .ch, .panel:not(.in) h2 .ch{filter:blur(3px)}
 }
 /* extended entrance stagger for credits */
 .in .rise:nth-child(6){transition-delay:.6s}
