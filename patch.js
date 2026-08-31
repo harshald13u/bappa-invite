@@ -1,6 +1,6 @@
 (function(){
   'use strict';
-  var lk = document.querySelector('link[href="patch.css"]');
+  var lk = document.querySelector('link[rel="stylesheet"][href^="patch.css"]');
   if (lk) document.head.appendChild(lk);
   var vt = document.querySelectorAll('.visarjan .bigtime');
   for (var v = 0; v < vt.length; v++)
