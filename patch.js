@@ -1,3 +1,10 @@
+
+/* visarjan time correction */
+(function(){
+  var els = document.querySelectorAll('.visarjan .bigtime');
+  for (var i = 0; i < els.length; i++)
+    els[i].innerHTML = els[i].innerHTML.replace('6:30 PM', '7:00 PM');
+})();
 (function(){
   'use strict';
   var m = document.querySelector('main');
