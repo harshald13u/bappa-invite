@@ -1,3 +1,7 @@
+/* rough brush stroke behind scroll cue */
+.cue.cue.cue.cue{background-image:url("data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20viewBox=%270%200%20260%20120%27%20preserveAspectRatio=%27none%27%3E%3Cfilter%20id=%27r%27%20x=%27-25%%27%20y=%27-35%%27%20width=%27150%%27%20height=%27170%%27%3E%3CfeTurbulence%20type=%27fractalNoise%27%20baseFrequency=%270.05%200.09%27%20numOctaves=%273%27%20seed=%2711%27/%3E%3CfeDisplacementMap%20in=%27SourceGraphic%27%20scale=%2718%27/%3E%3C/filter%3E%3Cg%20filter=%27url(%23r)%27%3E%3Cellipse%20cx=%27130%27%20cy=%2760%27%20rx=%27112%27%20ry=%2742%27%20fill=%27rgba(9,19,33,0.92)%27/%3E%3Cellipse%20cx=%27124%27%20cy=%2768%27%20rx=%27122%27%20ry=%2730%27%20fill=%27rgba(9,19,33,0.55)%27/%3E%3Cellipse%20cx=%27138%27%20cy=%2750%27%20rx=%2796%27%20ry=%2734%27%20fill=%27rgba(16,32,52,0.65)%27/%3E%3C/g%3E%3C/svg%3E");
+  background-size:118% 128%; background-position:center 42%; background-repeat:no-repeat; background-color:transparent;
+  padding:16px 40px 18px}
 /* cue: no box, clean floating chevrons */
 .cue.cue.cue{background:transparent; border:none; padding:0; box-shadow:none;
   -webkit-backdrop-filter:none; backdrop-filter:none; border-radius:0;
