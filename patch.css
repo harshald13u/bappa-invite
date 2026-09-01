@@ -1,3 +1,15 @@
+/* phone readability + clean raised cue */
+@media (max-width:700px){
+  .cue.cue{bottom:7svh; background:rgba(8,17,28,.8); border-color:rgba(232,163,61,.65);
+    -webkit-backdrop-filter:none; backdrop-filter:none;
+    box-shadow:0 4px 18px rgba(4,10,18,.65), 0 0 14px rgba(232,163,61,.25)}
+  .gloss{color:rgba(240,247,253,.98) !important;
+    text-shadow:0 1px 8px rgba(4,10,18,.98), 0 0 22px rgba(4,10,18,.92) !important}
+  .lede{color:#ECF4FB;
+    text-shadow:0 1px 8px rgba(4,10,18,.98), 0 0 20px rgba(4,10,18,.9)}
+  .deva{text-shadow:0 1px 10px rgba(4,10,18,.98), 0 0 16px rgba(4,10,18,.85)}
+  .scrim::before{background:radial-gradient(ellipse at center, rgba(4,10,18,.94) 0%, rgba(4,10,18,.82) 46%, rgba(4,10,18,.45) 72%, transparent 88%)}
+}
 /* phone: lift text block toward 60% height, reserve bottom for the cue */
 @media (max-width:700px){
   main .panel.panel{padding:3svh 18px 16svh}
