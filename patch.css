@@ -1,3 +1,8 @@
+/* cue: no box, clean floating chevrons */
+.cue.cue.cue{background:transparent; border:none; padding:0; box-shadow:none;
+  -webkit-backdrop-filter:none; backdrop-filter:none; border-radius:0;
+  text-shadow:0 1px 12px rgba(4,10,18,.95), 0 0 10px rgba(4,10,18,.85)}
+.cue.cue.cue .chev{filter:drop-shadow(0 0 6px rgba(232,163,61,.9)) drop-shadow(0 1px 6px rgba(4,10,18,.9))}
 /* phone readability + clean raised cue */
 @media (max-width:700px){
   .cue.cue{bottom:7svh; background:rgba(8,17,28,.8); border-color:rgba(232,163,61,.65);
