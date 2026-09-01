@@ -1,3 +1,7 @@
+/* ground Kailash at the bottom of phone frames (hide lake band) */
+@media (max-width:700px){
+  #scene{transform-origin:50% 0; transform:scale(1.42)}
+}
 /* unmissable scroll cue */
 .cue{font-size:13px !important; color:#F8D48A !important; letter-spacing:.38em;
   background:rgba(8,17,28,.55); padding:13px 24px 15px; border-radius:100px;
