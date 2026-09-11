@@ -1,0 +1,318 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#08111C">
+<title>Bappa is coming home · Invite images</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link id="gf" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,600;1,9..144,400&family=Karla:wght@300;400;600;700&family=Tiro+Devanagari+Marathi&display=swap" rel="stylesheet">
+<style>
+  body{margin:0;background:#0b1420;color:#F2F7FB;font-family:Karla,system-ui,sans-serif;
+    display:flex;flex-direction:column;align-items:center;padding:22px 14px 70px}
+  h2{font-weight:700;letter-spacing:.22em;font-size:12px;color:#E8A33D;margin:0 0 6px;text-align:center}
+  p.hint{margin:0 0 24px;font-size:13px;color:#A9C6DC;text-align:center;max-width:420px;line-height:1.65}
+  .card{display:none;flex-direction:column;align-items:center;margin-bottom:38px}
+  .label{font-size:11px;font-weight:700;letter-spacing:.24em;color:#F5C97E;margin-bottom:10px}
+  img.shot{width:min(88vw,340px);border-radius:12px;box-shadow:0 18px 50px -18px #000;display:block}
+  a.dl{margin-top:14px;padding:11px 24px;border-radius:100px;text-decoration:none;
+    border:1px solid rgba(232,163,61,.55);background:rgba(232,163,61,.1);color:#E8A33D;
+    font-weight:700;font-size:12px;letter-spacing:.15em}
+  #status{font-size:14px;color:#C9DCEA;margin:50px 0;text-align:center;line-height:1.8;max-width:420px}
+  canvas{display:none}
+</style>
+</head>
+<body>
+<h2>BAPPA IS COMING HOME · INVITE IMAGES</h2>
+<p class="hint">Press and hold (phone) or right-click (PC) on a card &rarr; <b>Save image</b>.<br>Or tap the download button under it.</p>
+<div id="status">Painting the invite&hellip;</div>
+
+<div class="card" id="c-story">
+  <div class="label">PHONE / STATUS · 1080 × 2160</div>
+  <img class="shot" id="img-story" alt="Ganpati invitation, phone size">
+  <a class="dl" id="dl-story" download="Bappa-Invite-Phone.jpg">DOWNLOAD</a>
+</div>
+
+<div class="card" id="c-post">
+  <div class="label">WHATSAPP / POST · 1080 × 1350</div>
+  <img class="shot" id="img-post" alt="Ganpati invitation, post size">
+  <a class="dl" id="dl-post" download="Bappa-Invite-Post.jpg">DOWNLOAD</a>
+</div>
+
+<canvas id="cv"></canvas>
+
+<script>
+(function(){
+  'use strict';
+  var RAW = 'https://raw.githubusercontent.com/harshald13u/bappa-invite/main/';
+  var cv = document.getElementById('cv');
+  var ctx = cv.getContext('2d');
+  var statusEl = document.getElementById('status');
+  function say(t){ statusEl.innerHTML = t; }
+
+  function loadImg(src){
+    return new Promise(function(res){
+      if (!src) return res(null);
+      var im = new Image();
+      im.onload = function(){ res(im); };
+      im.onerror = function(){ res(null); };
+      im.src = src;
+    });
+  }
+  function grab(name){
+    return fetch(name).then(function(r){ if (!r.ok) throw new Error('HTTP ' + r.status); return r.text(); })
+      .catch(function(){ return fetch(RAW + name).then(function(r){ if (!r.ok) throw new Error('HTTP ' + r.status); return r.text(); }); });
+  }
+  function fontsReady(){
+    var specs = ["300 40px 'Fraunces'", "400 40px 'Fraunces'", "italic 400 40px 'Fraunces'",
+                 "300 20px Karla", "400 20px Karla", "600 20px Karla", "700 20px Karla",
+                 "400 30px 'Tiro Devanagari Marathi'"];
+    if (!document.fonts || !document.fonts.load) return new Promise(function(r){ setTimeout(r, 1500); });
+    var link = document.getElementById('gf');
+    var cssLoaded = new Promise(function(r){
+      if (link.sheet) return r();
+      link.addEventListener('load', r); link.addEventListener('error', r); setTimeout(r, 5000);
+    });
+    return cssLoaded.then(function(){
+      var all = Promise.all(specs.map(function(s){ return document.fonts.load(s).catch(function(){}); }));
+      return Promise.race([all, new Promise(function(r){ setTimeout(r, 9000); })]);
+    }).then(function(){ return new Promise(function(r){ setTimeout(r, 150); }); });
+  }
+
+  // ── helpers ────────────────────────────────────────────────
+  var W, H, K, KB;
+  var FR = "'Fraunces', Georgia, serif", KA = "Karla, system-ui, sans-serif", TI = "'Tiro Devanagari Marathi', serif";
+  function f(weight, size, family, italic){ ctx.font = (italic ? 'italic ' : '') + weight + ' ' + (size * K) + 'px ' + family; }
+  function tracked(txt, cx, y, ls){
+    ls = (ls || 0) * K;
+    var total = ctx.measureText(txt).width + ls * (txt.length - 1);
+    var x = cx - total / 2, prev = ctx.textAlign; ctx.textAlign = 'left';
+    for (var i = 0; i < txt.length; i++){ ctx.fillText(txt[i], x, y); x += ctx.measureText(txt[i]).width + ls; }
+    ctx.textAlign = prev;
+  }
+  function segsRight(segs, rx, y){
+    var total = 0, i;
+    for (i = 0; i < segs.length; i++){ f.apply(null, segs[i].font); segs[i].w = ctx.measureText(segs[i].t).width; total += segs[i].w; }
+    var x = rx - total, prev = ctx.textAlign; ctx.textAlign = 'left';
+    for (i = 0; i < segs.length; i++){ f.apply(null, segs[i].font); ctx.fillStyle = segs[i].color; ctx.fillText(segs[i].t, x, y); x += segs[i].w; }
+    ctx.textAlign = prev;
+  }
+  function glow(c, b){ ctx.shadowColor = c; ctx.shadowBlur = b * K; ctx.shadowOffsetX = 0; ctx.shadowOffsetY = 0; }
+  function noGlow(){ ctx.shadowColor = 'transparent'; ctx.shadowBlur = 0; }
+  function roundRect(x, y, w, h, r){
+    ctx.beginPath(); ctx.moveTo(x + r, y);
+    ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r);
+    ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath();
+  }
+  function bottomImg(im, cx, bottomY, targetW){
+    if (!im) return;
+    var w = targetW, h = targetW * (im.height / im.width);
+    ctx.drawImage(im, cx - w / 2, bottomY - h, w, h);
+  }
+  function clamp(v, a, b){ return Math.max(a, Math.min(b, v)); }
+
+  // ── the painting ───────────────────────────────────────────
+  function paint(art, width, height, opt){
+    opt = opt || {};
+    W = width; H = height; KB = W / 1080; K = KB * (opt.scale || 1);
+    var DPR = opt.dpr || 2;
+    cv.width = W * DPR; cv.height = H * DPR;
+    ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+    ctx.clearRect(0, 0, W, H);
+    ctx.textBaseline = 'alphabetic'; ctx.textAlign = 'center';
+
+    // sky
+    var sky = ctx.createLinearGradient(0, 0, 0, H);
+    sky.addColorStop(0, '#050c16'); sky.addColorStop(.30, '#08111C'); sky.addColorStop(.64, '#0e1f33'); sky.addColorStop(1, '#16324A');
+    ctx.fillStyle = sky; ctx.fillRect(0, 0, W, H);
+
+    // stars
+    var seed = 7; function rnd(){ seed = (seed * 9301 + 49297) % 233280; return seed / 233280; }
+    ctx.fillStyle = '#fff';
+    var starCount = Math.round(170 * (H / 1350));
+    for (var i = 0; i < starCount; i++){
+      var sx = rnd() * W, sy = rnd() * (H * .70), sr = (rnd() < .85 ? 1 : 1.7) * KB;
+      ctx.globalAlpha = .2 + rnd() * .6; ctx.beginPath(); ctx.arc(sx, sy, sr, 0, 6.2832); ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+
+    // milky way
+    if (art.mw){
+      ctx.save(); ctx.globalAlpha = .45; ctx.globalCompositeOperation = 'screen';
+      ctx.translate(W / 2, H * (opt.mwY || .30)); ctx.rotate(-7 * Math.PI / 180);
+      var mww = W * 1.5, mwh = mww * (art.mw.height / art.mw.width);
+      ctx.drawImage(art.mw, -mww / 2, -mwh / 2, mww, mwh); ctx.restore();
+    }
+
+    // mountains
+    var mS = opt.mtn || 1;
+    ctx.save();
+    ctx.globalAlpha = .30; ctx.filter = 'brightness(.6) saturate(.75)';
+    bottomImg(art.far, W / 2, H - 150 * KB * mS, W * 1.16 * mS);
+    ctx.globalAlpha = .60; ctx.filter = 'brightness(.72)';
+    bottomImg(art.mid, W / 2, H - 40 * KB * mS, W * 1.15 * mS);
+    ctx.globalAlpha = 1; ctx.filter = 'brightness(.92)';
+    bottomImg(art.kai, W / 2, H + 16 * KB * mS, W * .74 * mS);
+    ctx.restore(); ctx.filter = 'none'; ctx.globalAlpha = 1;
+
+    // bottom fade + vignette
+    var fh = 560 * KB * mS;
+    var fade = ctx.createLinearGradient(0, H - fh, 0, H);
+    fade.addColorStop(0, 'rgba(5,12,22,0)'); fade.addColorStop(.45, 'rgba(5,12,22,.55)'); fade.addColorStop(1, 'rgba(5,12,22,.9)');
+    ctx.fillStyle = fade; ctx.fillRect(0, H - fh, W, fh);
+    var vig = ctx.createRadialGradient(W / 2, H * .40, W * .25, W / 2, H * .40, Math.max(W, H) * .8);
+    vig.addColorStop(0, 'rgba(4,10,18,0)'); vig.addColorStop(1, 'rgba(4,10,18,.6)');
+    ctx.fillStyle = vig; ctx.fillRect(0, 0, W, H);
+
+    // ── vertical flow ──
+    var murtiW = (opt.murti || 285) * K;
+    var murtiH = art.murti ? murtiW * (art.murti.height / art.murti.width) : 0;
+    var hBless = 30 * K, hHead = 164 * K, hKick = 16 * K, hDates = 130 * K, hDiv = 8 * K, hPanel = 236 * K, hAddr = 66 * K;
+    var blocks = [murtiH, hBless, hHead, hKick, hDates, hDiv, hPanel, hAddr];
+    var mult = [1, 1, 1, 1, .8, .8, 1];
+    var top = 78 * K, bottomZone = 112 * K;
+    var sum = 0; for (var b = 0; b < blocks.length; b++) sum += blocks[b];
+    var msum = 0; for (var q = 0; q < mult.length; q++) msum += mult[q];
+    var slack = H - top - bottomZone - sum;
+    var gap = clamp(slack / msum, 18 * K, (opt.maxGap || 116) * K);
+    var leftover = slack - gap * msum;
+    var y = top + Math.max(0, leftover) * .5;
+
+    // moon, top-right
+    if (art.moon){
+      ctx.save(); glow('rgba(205,218,240,.65)', 34);
+      var md = 118 * K; ctx.drawImage(art.moon, W - 92 * K - md, top - 6 * K, md, md);
+      ctx.restore(); noGlow();
+    }
+
+    // Bappa in a golden halo
+    if (art.murti){
+      var gx = W / 2 - murtiW / 2, gy = y;
+      var hc = gy + murtiH * .52, hr = murtiW * .98;
+      var halo = ctx.createRadialGradient(W / 2, hc, murtiW * .06, W / 2, hc, hr);
+      halo.addColorStop(0, 'rgba(232,163,61,.40)'); halo.addColorStop(.42, 'rgba(232,163,61,.14)');
+      halo.addColorStop(.72, 'rgba(232,163,61,.045)'); halo.addColorStop(1, 'rgba(232,163,61,0)');
+      ctx.fillStyle = halo; ctx.fillRect(W / 2 - hr, hc - hr, hr * 2, hr * 2);
+      ctx.save(); glow('rgba(0,0,0,.6)', 26); ctx.drawImage(art.murti, gx, gy, murtiW, murtiH); ctx.restore(); noGlow();
+    }
+    y += murtiH + gap * mult[0];
+
+    // blessing (single fillText so Devanagari shapes correctly)
+    ctx.fillStyle = '#E8A33D'; f(400, 30, TI); glow('rgba(4,10,18,.95)', 16);
+    ctx.fillText('॥ श्री गणेशाय नमः ॥', W / 2, y + 25 * K); noGlow();
+    y += hBless + gap * mult[1];
+
+    // headline
+    ctx.fillStyle = '#F2F7FB'; glow('rgba(4,10,18,.92)', 30);
+    f(300, 86, FR); ctx.fillText('Bappa is', W / 2, y + 66 * K);
+    var ly = y + 66 * K + 92 * K;
+    f(300, 86, FR); var w1 = ctx.measureText('coming ').width;
+    f(400, 86, FR, true); var w2 = ctx.measureText('home').width;
+    var sx2 = W / 2 - (w1 + w2) / 2;
+    ctx.textAlign = 'left';
+    f(300, 86, FR); ctx.fillStyle = '#F2F7FB'; ctx.fillText('coming ', sx2, ly);
+    f(400, 86, FR, true); ctx.fillStyle = '#E8A33D'; ctx.fillText('home', sx2 + w1, ly);
+    noGlow(); ctx.textAlign = 'center';
+    y += hHead + gap * mult[2];
+
+    // kicker
+    ctx.fillStyle = '#F5C97E'; f(700, 20, KA); glow('rgba(4,10,18,.9)', 14);
+    tracked('FOR THE FIRST TIME', W / 2, y + 15 * K, 8); noGlow();
+    y += hKick + gap * mult[3];
+
+    // dates
+    var dy = y + 86 * K;
+    glow('rgba(4,10,18,.92)', 30);
+    f(300, 118, FR); var d1 = ctx.measureText('14').width, d3 = ctx.measureText('15').width;
+    f(400, 52, FR, true); var d2 = ctx.measureText('&').width;
+    var g2 = 22 * K, totalD = d1 + g2 + d2 + g2 + d3, dx = W / 2 - totalD / 2;
+    ctx.textAlign = 'left';
+    f(300, 118, FR); ctx.fillStyle = '#F2F7FB'; ctx.fillText('14', dx, dy);
+    f(400, 52, FR, true); ctx.fillStyle = '#E8A33D'; ctx.fillText('&', dx + d1 + g2, dy);
+    f(300, 118, FR); ctx.fillStyle = '#F2F7FB'; ctx.fillText('15', dx + d1 + g2 + d2 + g2, dy);
+    noGlow(); ctx.textAlign = 'center';
+    ctx.fillStyle = '#C9DCEA'; f(600, 19, KA); glow('rgba(4,10,18,.9)', 12);
+    tracked('SEPTEMBER 2026  ·  MONDAY & TUESDAY', W / 2, dy + 44 * K, 5); noGlow();
+    y += hDates + gap * mult[4];
+
+    // divider
+    var dvy = y + 4 * K;
+    var dg = ctx.createLinearGradient(W / 2 - 170 * K, 0, W / 2 + 170 * K, 0);
+    dg.addColorStop(0, 'rgba(232,163,61,0)'); dg.addColorStop(.5, 'rgba(232,163,61,.75)'); dg.addColorStop(1, 'rgba(232,163,61,0)');
+    ctx.fillStyle = dg; ctx.fillRect(W / 2 - 170 * K, dvy, 340 * K, Math.max(1, 1 * K));
+    ctx.fillStyle = '#E8A33D'; glow('rgba(232,163,61,.9)', 12);
+    ctx.beginPath(); ctx.arc(W / 2, dvy, 3.5 * K, 0, 6.2832); ctx.fill(); noGlow();
+    y += hDiv + gap * mult[5];
+
+    // details panel
+    var px = 128 * K, pw = W - px * 2, py = y, ph = hPanel;
+    if (pw < W * .72){ px = W * .14; pw = W - px * 2; }
+    var pg = ctx.createLinearGradient(px, py, px + pw, py + ph);
+    pg.addColorStop(0, 'rgba(11,24,40,.94)'); pg.addColorStop(1, 'rgba(5,13,23,.97)');
+    ctx.save(); glow('rgba(0,0,0,.8)', 40); ctx.fillStyle = pg; roundRect(px, py, pw, ph, 24 * K); ctx.fill(); ctx.restore(); noGlow();
+    ctx.strokeStyle = 'rgba(232,163,61,.42)'; ctx.lineWidth = 1.3 * K; roundRect(px, py, pw, ph, 24 * K); ctx.stroke();
+    ctx.strokeStyle = 'rgba(232,163,61,.7)'; ctx.lineWidth = 2 * K; ctx.beginPath();
+    ctx.moveTo(px + 16 * K, py + 46 * K); ctx.lineTo(px + 16 * K, py + 16 * K); ctx.lineTo(px + 46 * K, py + 16 * K);
+    ctx.moveTo(px + pw - 46 * K, py + ph - 16 * K); ctx.lineTo(px + pw - 16 * K, py + ph - 16 * K); ctx.lineTo(px + pw - 16 * K, py + ph - 46 * K);
+    ctx.stroke();
+    function row(label, value, ry){
+      ctx.textAlign = 'left'; ctx.fillStyle = '#F5C97E'; f(700, 19, KA);
+      var lx = px + 44 * K;
+      for (var i = 0; i < label.length; i++){ ctx.fillText(label[i], lx, ry); lx += ctx.measureText(label[i]).width + 3.4 * K; }
+      var segs = (typeof value === 'string') ? [{t: value, font: [300, 31, FR], color: '#F2F7FB'}] : value;
+      segsRight(segs, px + pw - 44 * K, ry); ctx.textAlign = 'center';
+    }
+    row('DARSHAN', '11:00 AM – 7:00 PM', py + 54 * K);
+    row('AARTI', [{t: '1:00 PM ', font: [300, 31, FR], color: '#F2F7FB'}, {t: '&', font: [400, 30, FR, true], color: '#E8A33D'}, {t: ' 7:00 PM', font: [300, 31, FR], color: '#F2F7FB'}], py + 100 * K);
+    var rg = ctx.createLinearGradient(px + 44 * K, 0, px + pw - 44 * K, 0);
+    rg.addColorStop(0, 'rgba(232,163,61,0)'); rg.addColorStop(.5, 'rgba(232,163,61,.4)'); rg.addColorStop(1, 'rgba(232,163,61,0)');
+    ctx.fillStyle = rg; ctx.fillRect(px + 44 * K, py + 124 * K, pw - 88 * K, Math.max(1, 1 * K));
+    row('VISARJAN', 'Tuesday, 7:00 PM', py + 162 * K);
+    row('DHOL TASHA LEZIM', '7:30 – 9:00 PM', py + 208 * K);
+    y += hPanel + gap * mult[6];
+
+    // address
+    ctx.fillStyle = '#EDDFC2'; f(400, 35, FR); glow('rgba(4,10,18,.95)', 18);
+    ctx.fillText('1801, Aditya Heights', W / 2, y + 28 * K);
+    ctx.fillStyle = '#C4DAEB'; f(400, 22, KA);
+    tracked('C Wing, Dadal Estate  ·  Tardeo, Mumbai', W / 2, y + 28 * K + 38 * K, 1); noGlow();
+
+    // sign-off
+    ctx.fillStyle = '#F5C97E'; f(700, 19, KA); glow('rgba(4,10,18,.95)', 16);
+    tracked('WITH LOVE  ·  DASANI FAMILY', W / 2, H - 52 * K, 7); noGlow();
+  }
+
+  function emit(imgId, dlId, cardId){
+    var data = cv.toDataURL('image/jpeg', 0.92);
+    document.getElementById(imgId).src = data;
+    document.getElementById(dlId).href = data;
+    document.getElementById(cardId).style.display = 'flex';
+  }
+
+  function run(){
+    say('Fetching the artwork…');
+    Promise.all([grab('index.html'), grab('sky.js'), fontsReady()])
+      .then(function(res){
+        var webps = res[0].match(/data:image\/webp;base64,[A-Za-z0-9+/=]+/g) || [];
+        var moon = res[1].match(/data:image\/webp;base64,[A-Za-z0-9+/=]+/);
+        say('Painting…');
+        return Promise.all([webps[0], webps[1], webps[2], webps[3], webps[4], moon ? moon[0] : null].map(loadImg));
+      })
+      .then(function(imgs){
+        var art = { murti: imgs[0], far: imgs[1], mid: imgs[2], kai: imgs[3], mw: imgs[4], moon: imgs[5] };
+        paint(art, 1080, 2160, { scale: 1.3, murti: 330, mtn: 1.35, mwY: .26 });
+        emit('img-story', 'dl-story', 'c-story');
+        paint(art, 1080, 1350, {});
+        emit('img-post', 'dl-post', 'c-post');
+        statusEl.style.display = 'none';
+      })
+      .catch(function(err){
+        say('Could not build the images.<br><small>' + (err && err.message) + '</small><br><br>Check you are online, then refresh this page.');
+      });
+  }
+  run();
+})();
+</script>
+</body>
+</html>
